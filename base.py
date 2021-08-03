@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 directory = '/home/matt/Desktop/repos/corgi-detector/images/Images/'
 batch_size = 32
+epochs = 50
 
 training_data = tf.keras.preprocessing.image_dataset_from_directory(
     directory,
@@ -31,8 +32,26 @@ validation_data = tf.keras.preprocessing.image_dataset_from_directory(
 
 plt.figure(figsize=(10, 10))
 for images, labels in training_data.take(1):
-    for i in range(20):
+    for i in range(30):
         ax = plt.subplot(10, 10, i + 1)
         plt.imshow(images[i].numpy().astype("uint8"))
         plt.title(int(labels[i]))
         plt.axis("off")
+
+
+model = keras.models.Sequential()
+model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+
+model.compile(
+    optimizer=keras.optimizers.Adam(1e-3),
+    loss="binary_crossentropy",
+    metrics=["accuracy"],
+)
+model.fit(
+    training_data, epochs=epochs, validation_data=validation_data,
+)
+
